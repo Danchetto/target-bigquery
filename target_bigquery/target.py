@@ -15,7 +15,8 @@ import uuid
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, Type, Union
 
 from singer_sdk import typing as th
-from singer_sdk.target_base import Sink, Target
+from singer_sdk.target_base import Target
+from singer_sdk.sinks import Sink
 
 from target_bigquery.batch_job import BigQueryBatchJobDenormalizedSink, BigQueryBatchJobSink
 from target_bigquery.core import BaseBigQuerySink, BaseWorker, BigQueryCredentials, ParType
@@ -313,7 +314,7 @@ class TargetBigQuery(Target):
         )
 
         def worker_factory():
-            return self.get_sink_class().worker_cls_factory(self.proc_cls, self.config,)(
+            return self.get_sink_class().worker_cls_factory(self.proc_cls, self.config, )(
                 ext_id=uuid.uuid4().hex,
                 queue=self.queue,
                 credentials=self._credentials,
@@ -335,7 +336,7 @@ class TargetBigQuery(Target):
     # the Process, Pipe, and Queue classes as protocols which can be duck-typed.
 
     def get_parallelization_components(
-        self, default=ParType.THREAD
+            self, default=ParType.THREAD
     ) -> Tuple[
         Type["Process"],
         Callable[[bool], Tuple["Connection", "Connection"]],
@@ -368,20 +369,20 @@ class TargetBigQuery(Target):
     def add_worker_predicate(self) -> bool:
         """Predicate determining when it is valid to add a worker to the pool."""
         return (
-            self._jobs_enqueued
-            > getattr(self.get_sink_class(), "WORKER_CAPACITY_FACTOR", WORKER_CAPACITY_FACTOR)
-            * (len(self.workers) + 1)
-            and len(self.workers)
-            < self.config.get("options", {}).get(
-                "max_workers",
-                getattr(self.get_sink_class(), "MAX_WORKERS", MAX_WORKERS),
-            )
-            and time.time() - self._last_worker_creation
-            > getattr(
-                self.get_sink_class(),
-                "WORKER_CREATION_MIN_INTERVAL",
-                WORKER_CREATION_MIN_INTERVAL,
-            )
+                self._jobs_enqueued
+                > getattr(self.get_sink_class(), "WORKER_CAPACITY_FACTOR", WORKER_CAPACITY_FACTOR)
+                * (len(self.workers) + 1)
+                and len(self.workers)
+                < self.config.get("options", {}).get(
+            "max_workers",
+            getattr(self.get_sink_class(), "MAX_WORKERS", MAX_WORKERS),
+        )
+                and time.time() - self._last_worker_creation
+                > getattr(
+            self.get_sink_class(),
+            "WORKER_CREATION_MIN_INTERVAL",
+            WORKER_CREATION_MIN_INTERVAL,
+        )
         )
 
     def resize_worker_pool(self) -> None:
@@ -437,12 +438,12 @@ class TargetBigQuery(Target):
         raise ValueError(f"Unknown method: {method}")
 
     def get_sink(
-        self,
-        stream_name: str,
-        *,
-        record: Optional[dict] = None,
-        schema: Optional[dict] = None,
-        key_properties: Optional[List[str]] = None,
+            self,
+            stream_name: str,
+            *,
+            record: Optional[dict] = None,
+            schema: Optional[dict] = None,
+            key_properties: Optional[List[str]] = None,
     ) -> Sink:
         """Get a sink for a stream. If the sink does not exist, create it. This override skips sink recreation
         on schema change. Meaningful mid stream schema changes are not supported and extremely rare to begin
