@@ -273,6 +273,7 @@ class BaseBigQuerySink(BatchSink):
         self.update_schema()
         self.merge_target: Optional[BigQueryTable] = None
         self.overwrite_target: Optional[BigQueryTable] = None
+        expires = self.config["temp_table_ttl"]
         # In absence of dedupe or overwrite candidacy, we append to the target table directly
         # If the stream is marked for one of these strategies, we create a temporary table instead
         # and merge or overwrite the target table with the temporary table after the ingest.
@@ -288,7 +289,7 @@ class BaseBigQuerySink(BatchSink):
                 self.apply_transforms,
                 **{
                     "table": {
-                        "expires": datetime.datetime.now() + datetime.timedelta(days=1),
+                        "expires": None if expires == 0 else datetime.datetime.now() + datetime.timedelta(days=expires),
                     },
                     "dataset": {
                         "location": self.config.get(
@@ -306,7 +307,7 @@ class BaseBigQuerySink(BatchSink):
                 self.apply_transforms,
                 **{
                     "table": {
-                        "expires": datetime.datetime.now() + datetime.timedelta(days=1),
+                        "expires": None if expires == 0 else datetime.datetime.now() + datetime.timedelta(days=expires),
                     },
                     "dataset": {
                         "location": self.config.get(

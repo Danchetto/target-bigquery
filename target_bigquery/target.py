@@ -294,6 +294,13 @@ class TargetBigQuery(Target):
                 " from different extracts."
             ),
         ),
+        th.Property(
+            "temp_table_ttl",
+            th.IntegerType,
+            required=False,
+            default=1,
+            description="Number of days to live the temporary table. Defaults to 1. Pass 0 to set NEVER to expiry.",
+        ),
     ).to_dict()
 
     def __init__(self, *args, **kwargs) -> None:
