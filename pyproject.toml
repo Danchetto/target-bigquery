@@ -29,14 +29,14 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "<3.12,>=3.8"
-requests = ">=2.25.1"
-singer-sdk = ">=0.22.1"
-google-cloud-bigquery = { version = ">=3.4.1,<4", extras = ["bqstorage"] }
-orjson = ">=3.7.2,<4"
-tenacity = ">=8.0.1,<9"
-grpcio-tools = ">=1.51.1,<2"
-google-cloud-storage = ">=2.7.0,<3"
-grpcio-status = ">=1.51.1,<2"
+requests = "^2.31.0"
+singer-sdk = "^0.34.1"
+google-cloud-bigquery = { version = ">=3.14.1,<4", extras = ["bqstorage"] }
+orjson = ">=3.9.10,<4"
+tenacity = ">=8.2.3,<9"
+grpcio-tools = ">=1.60.0,<2"
+google-cloud-storage = ">=2.14.0,<3"
+grpcio-status = ">=1.60.0,<2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
